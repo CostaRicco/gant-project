@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang=ru>
+<meta charset=utf-8>
+<meta name=viewport content="width=device-width,initial-scale=1">
+<title>Nora-M · План проекта</title>
+<style>
+    :root {
+        --paper: #f8f3e9;
+        --ink: #281c15;
+        --line: #e3d9ca;
+        --muted: #66584e
+    }
+
+    * {
+        box-sizing: border-box
+    }
+
+    body {
+        margin: 0;
+        background: radial-gradient(ellipse at 95% 0, #4a281c, transparent 52%), #100c0a;
+        color: #fff2e6;
+        font: 15px/1.45 system-ui, sans-serif
+    }
+
+    main {
+        width: 100%;
+        padding: clamp(10px, 2vw, 34px)
+    }
+
+    header,
+    .head,
+    .tools {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 9px
+    }
+
+    header {
+        margin: 0 0 14px
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+        margin: 0
+    }
+
+    h1 {
+        font-size: clamp(29px, 5vw, 55px);
+        letter-spacing: -.07em
+    }
+
+    h2 {
+        font-size: clamp(23px, 3vw, 32px);
+        letter-spacing: -.045em
+    }
+
+    h3 {
+        font-size: 16px
+    }
+
+    .tag {
+        color: #ffab8e;
+        font: 11px monospace;
+        text-transform: uppercase;
+        letter-spacing: .12em
+    }
+
+    .panel,
+    .card {
+        background: var(--paper);
+        color: var(--ink);
+        border-radius: 18px;
+        padding: clamp(12px, 1.8vw, 26px);
+        min-width: 0
+    }
+
+    .panel, .cards.ov {
+        margin-bottom: 14px
+    }
+
+    .cards,
+    .months {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 10px
+    }
+
+    .months {
+        margin-top: 12px
+    }
+
+    .month {
+        display: block;
+        text-align: left;
+        width: 100%;
+        background: #eee5d8;
+        padding: 12px;
+        border: 0;
+        border-radius: 12px
+    }
+
+    .month strong {
+        display: block;
+        font-size: clamp(16px, 2.4vw, 31px);
+        letter-spacing: -.04em
+    }
+
+    .month span,
+    .muted {
+        color: var(--muted);
+        font-size: 12px
+    }
+
+    .month:hover {
+        transform: translateY(-2px)
+    }
+
+    .total {
+        background: #292017;
+        color: #fff2e6;
+        padding: 7px 11px;
+        border-radius: 10px;
+        font-weight: 650
+    }
+
+    button {
+        cursor: pointer;
+        font: inherit;
+        color: inherit;
+        background: transparent;
+        border: 1px solid #c9baa8;
+        border-radius: 9px;
+        padding: 6px 9px;
+        transition: background .2s, transform .2s
+    }
+
+    button:hover,
+    button[aria-pressed=true] {
+        background: #f9dbca
+    }
+
+    button:focus-visible,
+    summary:focus-visible {
+        outline: 2px solid #9f391d;
+        outline-offset: 2px
+    }
+
+    .filters {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+        margin: 10px 0
+    }
+
+    .filters button,
+    .tools button {
+        font-size: 12px
+    }
+
+    .scroll {
+        overflow: auto;
+        border: 1px solid var(--line);
+        border-radius: 10px
+    }
+
+    .grid {
+        width: max-content;
+        --left: 210px
+    }
+
+    .row {
+        display: flex;
+        min-height: 39px;
+        border-bottom: 1px solid var(--line)
+    }
+
+    .label {
+        position: sticky;
+        left: 0;
+        z-index: 3;
+        background: #eee6d9;
+        flex: none;
+        width: var(--left);
+        padding: 6px 9px;
+        align-content: center;
+        font-size: 13px;
+        overflow-wrap: anywhere
+    }
+
+    .group .label,
+    .group .track {
+        background-color: #e7dbca;
+        font-weight: 650
+    }
+
+    .track {
+        position: relative;
+        flex: none;
+        background: repeating-linear-gradient(90deg, transparent 0 calc(var(--week) - 1px), var(--line) calc(var(--week) - 1px) var(--week))
+    }
+
+    .ticks {
+        display: flex
+    }
+
+    .tick {
+        flex: none;
+        overflow: hidden;
+        white-space: nowrap;
+        padding: 12px 5px;
+        font: 11px monospace
+    }
+
+    .bar,
+    .mark {
+        position: absolute
+    }
+
+    .bar {
+        height: 14px;
+        top: 12px;
+        border: 0;
+        padding: 0;
+        background: linear-gradient(90deg, #c84220, #ff7850)
+    }
+
+    .bar:hover {
+        background: #be3a1b;
+        transform: scaleY(1.2)
+    }
+
+    .mark {
+        white-space: nowrap;
+        background: var(--paper);
+        border: 0;
+        padding: 2px 4px;
+        font: 11px monospace
+    }
+
+    .pay {
+        color: #933518
+    }
+
+    .review {
+        color: #31594a
+    }
+
+    .now {
+        position: absolute;
+        inset-block: 0;
+        border-left: 1px dashed #b74629;
+        pointer-events: none
+    }
+
+    .legend {
+        margin-top: 7px
+    }
+
+    .entry {
+        display: block;
+        width: 100%;
+        text-align: left;
+        border: 0;
+        border-bottom: 1px solid var(--line);
+        border-radius: 0;
+        padding: 6px 1px;
+        font-size: 13px
+    }
+
+    .entry span {
+        display: block;
+        color: var(--muted);
+        font-size: 11px
+    }
+
+    summary {
+        cursor: pointer;
+        margin-top: 8px;
+        font-size: 12px;
+        color: #90371e
+    }
+
+    .tip {
+        position: fixed;
+        z-index: 10;
+        pointer-events: none;
+        opacity: 0;
+        transform: translateY(4px);
+        transition: .2s;
+        background: #281d17;
+        color: #fff1e7;
+        border-radius: 9px;
+        padding: 8px 11px;
+        max-width: min(360px, calc(100vw - 16px));
+        font-size: 13px
+    }
+
+    .tip.on {
+        opacity: 1;
+        transform: none
+    }
+
+    @media(max-width:820px) {
+
+        .cards,
+        .months {
+            grid-template-columns: repeat(2, minmax(0, 1fr))
+        }
+    }
+
+    @media(max-width:490px) {
+        .grid {
+            --left: 112px
+        }
+
+        .label {
+            font-size: 11px;
+            padding: 5px
+        }
+
+        .panel,
+        .card {
+            border-radius: 13px
+        }
+    }
+
+    @media(max-width:335px) {
+
+        .cards,
+        .months {
+            grid-template-columns: 1fr
+        }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+        * {
+            transition: none !important
+        }
+    }
+</style>
+<main>
+    <header>
+        <h1>Nora-M</h1><span class=tag>Клиентский план · Ноябрь 2026 / Февраль 2027</span>
+    </header>
+    
+    <section class=panel>
+        <div class=head>
+            <div>
+                <h2>Оплаты по месяцам</h2>
+                <p class=muted>Плановые суммы по датам платежей</p>
+            </div><span class=total id=total></span>
+        </div>
+        <div id=months class=months></div>
+    </section>
+    <div class=cards id=cards></div>
+    <section class=panel id=gantt>
+        <div class=head>
+            <h2>График проекта</h2>
+            <div class=tools>
+                <div id=zoom aria-label="Масштаб"></div>
+                <div><button id=prev aria-label="Назад">←</button> <button id=today>Сегодня</button> <button id=next
+                        aria-label="Вперёд">→</button></div>
+            </div>
+        </div>
+        <div class=filters id=filters></div>
+        <div class=scroll id=sc tabindex=0 aria-label="Диаграмма Ганта">
+            <div id=grid class=grid></div>
+        </div>
+        <p class="legend muted"><span class=pay>◆ Оплата</span> · <span class=review>◆ Согласование</span> · Окончание
+            работ рассчитано по рабочему календарю XML</p>
+    </section>
+</main>
+<div id=tip class=tip role=tooltip aria-hidden=true></div>
+<script id=data
+    type=application/json>[["Редизайн главной", "Редизайн упаковки", "Редизайн каталога", "Редизайн карточки"], [["6", 0, "1 этап: Макет", "work", "2026-11-02", "2026-11-20", null, 120.0], ["7", 0, "Оплата 90к", "pay", "2026-11-25", "2026-11-25", 90000, 0.0], ["8", 0, "2 этап: Верстка", "work", "2026-11-25", "2026-12-11", null, 104.0], ["9", 1, "Оплата 1 этапа", "pay", "2026-11-23", "2026-11-23", 60000, 0.0], ["10", 1, "1 Этап: Анализ", "work", "2026-11-23", "2026-12-02", null, 59.0], ["11", 1, "Оплата 2 этап", "pay", "2026-12-02", "2026-12-02", 120000, 0.0], ["12", 1, "2 этап: Дизайн система", "work", "2026-12-02", "2026-12-18", null, 101.0], ["13", 1, "Оплата 3 этап 50%", "pay", "2027-01-14", "2027-01-14", 165000, 0.0], ["14", 1, "Оплата 3 этап 100%", "pay", "2027-02-02", "2027-02-02", 165000, 0.0], ["15", 1, "3 Этап: Разработка макетов", "work", "2027-01-14", "2027-02-18", null, 200.0], ["16", 1, "Оплата 4 этап", "pay", "2027-02-19", "2027-02-19", 78000, 0.0], ["17", 1, "4 Этап: Гайдбук", "work", "2027-02-18", "2027-02-25", null, 40.0], ["18", 2, "Оплата 7500", "pay", "2026-11-19", "2026-11-19", 7500, 0.0], ["19", 2, "Разработка структуры", "work", "2026-11-19", "2026-11-20", null, 16.0], ["20", 2, "Оплата 55000", "pay", "2026-11-30", "2026-11-30", 55000, 0.0], ["21", 2, "Разработка макета каталога", "work", "2026-11-30", "2026-12-14", null, 88.0], ["22", 2, "Согласование 1 страницы", "review", "2026-12-04", "2026-12-04", null, 0.0], ["23", 2, "Согласование 2 страницы", "review", "2026-12-08", "2026-12-08", null, 0.0], ["24", 2, "Согласование Адаптивы", "review", "2026-12-15", "2026-12-15", null, 0.0], ["25", 2, "Оплата 90к +17.5к", "pay", "2026-12-16", "2026-12-16", 107500, 0.0], ["26", 2, "2 Этап: Верстка Каталога", "work", "2026-12-16", "2026-12-25", null, 64.0], ["27", 3, "Оплата 62500", "pay", "2026-12-15", "2026-12-15", 62500, 0.0], ["28", 3, "Разработка макета Карточки", "work", "2026-12-15", "2026-12-28", null, 80.0], ["29", 3, "Согласование страницы", "review", "2026-12-22", "2026-12-22", null, 0.0], ["30", 3, "Согласование адаптивов", "review", "2026-12-25", "2026-12-25", null, 0.0], ["31", 3, "оплата 2 этапа", "pay", "2026-12-28", "2026-12-28", 70000, 0.0], ["32", 3, "2 этап: Верстка", "work", "2026-12-28", "2027-01-20", null, 144.0]]]</script>
+<script>
+    const $ = s => document.getElementById(s), [G, R] = JSON.parse($('data').textContent), D = 86400000, d = s => Date.parse(s + 'T00:00:00Z') / D, A = R.map(([id, g, n, k, a, b, s, h]) => ({ id, g, n, k, a: d(a), b: d(b), s, h, m: a.slice(0, 7) })), ev = A.filter(i => i.k !== 'work').sort((a, b) => a.a - b.a), pay = ev.filter(i => i.k === 'pay'), now = d(new Intl.DateTimeFormat('sv-SE', { timeZone: 'Europe/Moscow' }).format(new Date())), lo = Math.min(...A.map(i => i.a)), base = lo - (new Date(lo * D).getUTCDay() + 6) % 7, hi = base + (Math.ceil((Math.max(...A.map(i => i.b)) - base + 1) / 7) + 2) * 7, F = (n, o = { day: 'numeric', month: 'short' }) => new Intl.DateTimeFormat('ru', { ...o, timeZone: 'UTC' }).format(n * D), rub = n => new Intl.NumberFormat('ru').format(n) + ' ₽'; let w = 24, g = -1; const x = n => (n - base) * w; function E(t, p, s, c = '') { let a = document.createElement(t); a.className = c; if (s != null) a.textContent = s; p.append(a); return a } function B(p, s, fn, c = '') { let a = E('button', p, s, c); a.onclick = fn; return a } const detail = i => i.n + ' · ' + G[i.g] + ' · ' + F(i.a) + (i.k === 'pay' ? ' · ' + rub(i.s) : i.k === 'work' ? ' → ' + F(i.b) + ' · ' + (i.b - i.a + 1) + ' календ. дн. · ' + i.h + ' раб. ч.' : ' · время не указано'); function hide() { $('tip').classList.remove('on'); $('tip').setAttribute('aria-hidden', 'true') } function show(b, i) { let t = $('tip'), r = b.getBoundingClientRect(); t.textContent = detail(i); t.style.left = Math.max(8, Math.min(r.left, innerWidth - t.offsetWidth - 8)) + 'px'; t.style.top = (r.top > t.offsetHeight + 8 ? r.top - t.offsetHeight - 6 : r.bottom + 6) + 'px'; t.classList.add('on'); t.setAttribute('aria-hidden', 'false') } function jump(n) { $('sc').scrollLeft = Math.max(0, x(n) - w * 2) } function go(i) { if (g !== -1 && g !== i.g) { g = i.g; render() } jump(i.a); const b = $('p' + i.id); b.scrollIntoView({ block: 'nearest', inline: 'nearest' }); b.focus({ preventScroll: true }); requestAnimationFrame(() => show(b, i)) } function card(title) { let c = E('article', $('cards'), null, 'card'); E('h3', c, title); return c } const sum = a => a.reduce((s, i) => s + (i.s || 0), 0); $('total').textContent = 'Итого ' + rub(sum(pay)); for (const m of new Set(pay.map(i => i.m))) { let a = pay.filter(i => i.m === m), title = F(d(m + '-01'), { month: 'long', year: 'numeric' }); let b = B($('months'), null, () => go(a[0]), 'month'); b.setAttribute('aria-label', title + ', ' + rub(sum(a)) + '; перейти к первому платежу'); E('span', b, title); E('strong', b, rub(sum(a))); E('span', b, a.length === 1 ? '1 платёж' : a.length + ' платежа') }
+    $('cards').classList.add('ov'); const project = card('Проекты'); E('p', project, 'Длительность в календарных днях.', 'ov-note');
+    function row(p, title, sub, left, right, fn, arrow = false) { const b = B(p, null, fn, 'ov-row' + (left ? ' event' : '')); if (left) E('span', b, left, 'ov-date'); const t = E('span', b, title, 'ov-title'); E('span', t, sub, 'ov-sub'); if (right) E('span', b, right, 'ov-money'); if (arrow) E('span', b, '→', 'ov-arrow'); return b }
+    G.forEach((n, j) => { const w = A.filter(i => i.g === j && i.k === 'work'), a = Math.min(...w.map(i => i.a)), z = Math.max(...w.map(i => i.b)); row(project, n, F(a) + ' → ' + F(z) + ' · ' + (z - a + 1) + ' календ. дн.', null, rub(sum(pay.filter(i => i.g === j))), () => { g = j; render(); jump(a); $('gantt').scrollIntoView({ block: 'start' }) }, true) });
+    const approval = card('Что согласовать'); E('p', approval, 'Плановые даты согласований.', 'ov-note'); for (const i of ev.filter(i => i.k === 'review')) row(approval, i.n, G[i.g], F(i.a), null, () => go(i), true);
+    const payment = card('Что и когда оплатить'), months = [...new Set(pay.map(i => i.m))], tabs = E('div', payment, null, 'ov-tabs'), list = E('div', payment, null, 'ov-pay-list'), buttons = []; list.setAttribute('aria-live', 'polite'); function showPayments(m) { list.replaceChildren(); const pp = pay.filter(i => i.m === m); E('p', list, 'За месяц: ' + rub(sum(pp)), 'ov-note'); pp.forEach(i => row(list, i.n, G[i.g], F(i.a), rub(i.s), () => go(i))); buttons.forEach(([k, b]) => b.setAttribute('aria-pressed', String(k === m))) } months.forEach(m => buttons.push([m, B(tabs, F(d(m + '-01'), { month: 'short', year: '2-digit' }), () => showPayments(m))])); showPayments(pay.find(i => i.a >= now)?.m || months[0]);
+    function render() { hide(); const sc = $('sc'), grid = $('grid'), old = sc.scrollLeft; grid.replaceChildren(); grid.style.setProperty('--week', w * 7 + 'px'); $('zoom').replaceChildren(); for (const [z, n] of [[42, 'Дни'], [24, 'Недели'], [9, 'Месяцы']]) B($('zoom'), n, () => { const m = (sc.clientWidth - grid.querySelector('.label').offsetWidth) / 2, a = (sc.scrollLeft + m) / w; w = z; render(); sc.scrollLeft = Math.max(0, a * w - m) }).setAttribute('aria-pressed', w === z); $('filters').replaceChildren();['Все направления', ...G].forEach((n, j) => B($('filters'), n, () => { g = j - 1; render() }).setAttribute('aria-pressed', g === j - 1)); function row(n, c = '') { const r = E('div', grid, null, 'row ' + c); E('div', r, n, 'label'); const t = E('div', r, null, 'track'); t.style.width = x(hi) + 'px'; if (now >= base && now < hi) E('i', t, null, 'now').style.left = x(now) + w / 2 + 'px'; return t } const h = E('div', row('Этап / событие'), null, 'ticks'); for (let j = base; j < hi;) { const q = new Date(j * D), k = Math.min(hi, w === 42 ? j + 1 : w === 24 ? j + 7 : Date.UTC(q.getUTCFullYear(), q.getUTCMonth() + 1, 1) / D), n = E('span', h, w === 9 ? F(j, { month: 'long', year: 'numeric' }) : w === 42 ? F(j, { day: 'numeric', month: 'numeric' }) : F(j) + ' / ' + F(k - 1), 'tick'); n.style.width = (k - j) * w + 'px'; j = k } function mark(t, i, s, c) { const b = B(t, s, () => show(b, i), c); b.id = 'p' + i.id; b.setAttribute('aria-label', detail(i)); b.onpointerenter = b.onfocus = () => show(b, i); b.onpointerleave = b.onblur = hide; b.style.left = x(i.a) + 2 + 'px'; return b } G.forEach((n, j) => { if (g !== -1 && g !== j) return; row(n, 'group'); A.filter(i => i.g === j && i.k === 'work').forEach(i => { mark(row(i.n), i, '', 'bar').style.width = Math.max(5, (i.b - i.a + 1) * w - 4) + 'px' }) }); for (const [k, n] of [['review', 'Согласования'], ['pay', 'Оплаты']]) { const t = row(n), lanes = []; for (const i of ev.filter(i => i.k === k && (g === -1 || g === i.g))) { let b = mark(t, i, '◆' + (k === 'pay' && w !== 9 ? ' ' + rub(i.s) : ''), 'mark ' + k), l = x(i.a) + 2, j = lanes.findIndex(v => v < l); if (j < 0) j = lanes.length; lanes[j] = l + b.offsetWidth + 6; b.style.top = (8 + j * 22) + 'px' } t.parentElement.style.minHeight = Math.max(39, lanes.length * 22 + 13) + 'px' } sc.scrollLeft = old } $('sc').onscroll = hide; window.addEventListener('scroll', hide, { passive: true }); document.addEventListener('keydown', e => { if (e.key === 'Escape') hide() }); $('today').onclick = () => jump(now); $('prev').onclick = () => $('sc').scrollLeft -= w * (w === 9 ? 30 : 7); $('next').onclick = () => $('sc').scrollLeft += w * (w === 9 ? 30 : 7); render(); jump(now >= base && now < hi ? now : lo);
+</script>
+<style id=nora-dock-style>
+    body {
+        padding-bottom: 86px
+    }
+
+    #noraDock {
+        position: fixed;
+        z-index: 40;
+        top: max(10px, env(safe-area-inset-top));
+        left: 50%;
+        transform: translateX(-50%);
+        width: max-content;
+        max-width: calc(100vw - 18px);
+        color: #fff2e6;
+        font: 13px/1.3 system-ui, sans-serif
+    }
+
+    #noraDock .nd-bar,
+    #noraDock .nd-menu {
+        background: rgba(25, 19, 16, .91);
+        border: 1px solid #fff2e62b;
+        box-shadow: inset 0 1px 0 #ffffff12, 0 9px 35px #0007
+    }
+
+    @supports(backdrop-filter:blur(14px)) {
+
+        #noraDock .nd-bar,
+        #noraDock .nd-menu {
+            background: rgba(25, 19, 16, .74);
+            backdrop-filter: blur(16px) saturate(1.35)
+        }
+    }
+
+    #noraDock .nd-bar {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 5px;
+        border-radius: 999px
+    }
+
+    #noraDock button,
+    #noraDock a {
+        display: block;
+        text-decoration: none;
+        color: inherit;
+        font: inherit;
+        white-space: nowrap;
+        border: 0;
+        border-radius: 999px;
+        padding: 8px 11px;
+        background: transparent;
+        cursor: pointer;
+        transition: background .22s, transform .22s
+    }
+
+    #noraDock a:hover,
+    #noraDock button:hover {
+        background: #ffffff14
+    }
+
+    #noraDock a[aria-current=true],
+    #noraDock button[aria-pressed=true] {
+        background: #ff4a1c;
+        color: #190d08;
+        font-weight: 650
+    }
+
+    #noraDock :focus-visible {
+        outline: 2px solid #ffa782;
+        outline-offset: 2px
+    }
+
+    #noraDock .nd-brand {
+        color: #ff9e7e;
+        padding: 0 7px;
+        font: 11px monospace;
+        white-space: nowrap
+    }
+
+    #noraDock .nd-menu {
+        position: absolute;
+        right: 0;
+        top: calc(100% + 7px);
+        padding: 9px;
+        border-radius: 17px;
+        min-width: 220px
+    }
+
+    #noraDock .nd-menu[hidden] {
+        display: none
+    }
+
+    #noraDock .nd-scale {
+        display: flex;
+        gap: 4px;
+        margin: 6px 0
+    }
+
+    #noraDock .nd-caption {
+        color: #ffac8d;
+        font: 11px monospace;
+        padding: 3px 8px
+    }
+
+    #noraDock .nd-menu>button {
+        text-align: left;
+        width: 100%
+    }
+
+    main {
+        padding-top: clamp(72px, 8vw, 102px) !important
+    }
+
+    #gantt,
+    #months,
+    #cards {
+        scroll-margin-top: 75px
+    }
+
+    #tip {
+        z-index: 50
+    }
+
+    body.nd-compact .row {
+        min-height: 32px
+    }
+
+    body.nd-compact .label {
+        padding-top: 3px;
+        padding-bottom: 3px
+    }
+
+    body.nd-compact .bar {
+        top: 9px;
+        height: 13px
+    }
+
+    body.nd-compact .tick {
+        padding-top: 8px;
+        padding-bottom: 8px
+    }
+
+    body.nd-compact .card,
+    body.nd-compact .panel {
+        padding: 12px
+    }
+
+    body.nd-compact .entry {
+        padding-block: 4px
+    }
+
+    body.nd-compact .month {
+        padding: 8px
+    }
+
+    body.nd-compact .filters {
+        margin-block: 6px
+    }
+
+    @media(max-width:540px) {
+        #noraDock {
+            top: auto;
+            bottom: max(9px, env(safe-area-inset-bottom));
+            font-size: 12px
+        }
+
+        #noraDock .nd-brand {
+            display: none
+        }
+
+        #noraDock .nd-bar {
+            gap: 1px
+        }
+
+        #noraDock a,
+        #noraDock button {
+            padding: 8px 7px
+        }
+
+        #noraDock .nd-menu {
+            top: auto;
+            bottom: calc(100% + 7px)
+        }
+
+        main {
+            padding-top: 14px !important
+        }
+
+        #gantt,
+        #months,
+        #cards {
+            scroll-margin-top: 12px
+        }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+        #noraDock * {
+            transition: none !important
+        }
+    }
+</style>
+<script>(() => { const get = id => document.getElementById(id), dock = document.createElement('nav'); dock.id = 'noraDock'; dock.setAttribute('aria-label', 'Навигация по плану'); dock.innerHTML = `<div class="nd-bar"><span class="nd-brand">● NORA-M</span><a href="#gantt" data-target="gantt">Гант</a><a href="#months" data-target="months">Оплаты</a><a href="#cards" data-target="cards">Сводка</a><button type="button" id="ndMore" aria-expanded="false" aria-controls="ndMenu">Вид ▾</button></div><div class="nd-menu" id="ndMenu" hidden><div class="nd-caption">МАСШТАБ ГАНТА</div><div class="nd-scale"><button type="button">Дни</button><button type="button">Недели</button><button type="button">Месяцы</button></div><button type="button" id="ndToday">К сегодняшней дате</button><button type="button" id="ndCompact" aria-pressed="false">Компактный вид</button></div>`; document.body.append(dock); const menu = get('ndMenu'), more = get('ndMore'), compact = get('ndCompact'), links = [...dock.querySelectorAll('a')], buttons = [...dock.querySelectorAll('.nd-scale button')], zoom = get('zoom'); function active(id) { links.forEach(a => a.setAttribute('aria-current', String(a.dataset.target === id))) } function close(focus = false) { menu.hidden = true; more.setAttribute('aria-expanded', 'false'); if (focus) more.focus() } function to(id) { active(id); const t = get(id); (id === 'months' ? t.closest('section') : t).scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }) } links.forEach(a => a.onclick = e => { e.preventDefault(); close(); to(a.dataset.target) }); more.onclick = () => { if (menu.hidden) { menu.hidden = false; more.setAttribute('aria-expanded', 'true') } else close() }; document.addEventListener('pointerdown', e => { if (!dock.contains(e.target)) close() }); document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) close(true) }); function sync() { const m = [...zoom.querySelectorAll('button')].find(b => b.getAttribute('aria-pressed') === 'true'); buttons.forEach(b => b.setAttribute('aria-pressed', String(b.textContent === m?.textContent))) } new MutationObserver(sync).observe(zoom, { childList: true, subtree: true, attributes: true }); buttons.forEach(b => b.onclick = () => { [...zoom.querySelectorAll('button')].find(q => q.textContent === b.textContent)?.click(); close(true); to('gantt') }); get('ndToday').onclick = () => { get('today').click(); close(true); to('gantt') }; function density(on) { document.body.classList.toggle('nd-compact', on); compact.setAttribute('aria-pressed', String(on)); try { localStorage.setItem('nora-density', String(on)) } catch { } } compact.onclick = () => density(!document.body.classList.contains('nd-compact')); try { density(localStorage.getItem('nora-density') === 'true') } catch { } sync(); active('gantt') })();</script>
+<link rel="stylesheet" href="https://cdn.prtner.ai/1.1.0/medeo.css">
+<style>
+    body,
+    #noraDock {
+        font-family: var(--font-medeo-sans, "Medeo Sans"), system-ui, sans-serif
+    }
+
+    body {
+        font-optical-sizing: auto
+    }
+
+    .tag,
+    .tick,
+    .mark,
+    #noraDock .nd-brand,
+    #noraDock .nd-caption,
+    #cards .ov-date {
+        font-family: var(--font-medeo-mono, "Medeo Mono"), ui-monospace, monospace
+    }
+
+    .ov-money,
+    .month strong,
+    .total {
+        font-variant-numeric: tabular-nums
+    }
+
+    #cards.ov {
+        grid-template-columns: 1.15fr 1fr 1.15fr;
+        gap: 12px
+    }
+
+    #cards .ov-note {
+        font-size: 12px;
+        color: var(--muted);
+        margin: 5px 0 10px
+    }
+
+    #cards .ov-row {
+        position: relative;
+        display: grid;
+        width: 100%;
+        grid-template-columns: minmax(0, 1fr) auto auto;
+        gap: 8px;
+        align-items: center;
+        text-align: left;
+        border: 1px solid transparent;
+        border-radius: 10px;
+        padding: 8px clamp(7px, 1vw, 12px);
+        font-size: 13px;
+        transition: background .2s, border-color .2s, box-shadow .2s
+    }
+
+    #cards .ov-row.event {
+        grid-template-columns: auto minmax(0, 1fr) auto
+    }
+
+    #cards .ov-row+.ov-row {
+        margin-top: 3px
+    }
+
+    #cards .ov-row+.ov-row::before {
+        content: '';
+        position: absolute;
+        top: -3px;
+        left: 12px;
+        right: 12px;
+        border-top: 1px solid var(--line);
+        pointer-events: none
+    }
+
+    #cards .ov-row:hover,
+    #cards .ov-row:focus-visible {
+        background: #fae8dc;
+        border-color: #c97555;
+        box-shadow: 0 2px 6px #692a1612
+    }
+
+    #cards .ov-row:focus-visible {
+        outline: 2px solid #af5134;
+        outline-offset: 2px
+    }
+
+    .ov-title {
+        overflow-wrap: anywhere
+    }
+
+    .ov-sub {
+        display: block;
+        margin-top: 2px;
+        color: var(--muted);
+        font-size: 11px
+    }
+
+    .ov-money {
+        font-size: 12px;
+        font-weight: 650;
+        white-space: nowrap
+    }
+
+    .ov-date {
+        color: #8f351e;
+        background: #efe2d4;
+        border-radius: 5px;
+        padding: 4px;
+        font-size: 11px;
+        white-space: nowrap
+    }
+
+    .ov-arrow {
+        color: #a33a1d;
+        font-size: 16px;
+        transition: transform .2s
+    }
+
+    .ov-row:hover .ov-arrow {
+        transform: translateX(2px)
+    }
+
+    .ov-tabs {
+        display: flex;
+        gap: 5px;
+        flex-wrap: wrap;
+        margin-top: 8px
+    }
+
+    .ov-tabs button {
+        padding: 4px 7px;
+        font-size: 11px
+    }
+
+    .ov-tabs button:hover {
+        border-color: #c97555
+    }
+
+    body.nd-compact #cards .ov-row {
+        padding-block: 5px
+    }
+
+    @media(max-width:1050px) {
+        #cards.ov {
+            grid-template-columns: repeat(2, minmax(0, 1fr))
+        }
+    }
+
+    @media(max-width:700px) {
+        #cards.ov {
+            grid-template-columns: 1fr
+        }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+
+        #cards .ov-row,
+        .ov-arrow {
+            transition: none
+        }
+    }
+</style>
+<script>if (document.fonts) { Promise.allSettled([document.fonts.load('400 14px "Medeo Sans"'), document.fonts.load('400 11px "Medeo Mono"')]).then(() => { const sc = document.getElementById('sc'), pos = sc.scrollLeft; render(); sc.scrollLeft = pos }) }</script>
+
+</html>
